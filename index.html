@@ -1,0 +1,125 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Forgotten Mansion 🕯️</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#08070d;color:#eee7f5;font-family:Georgia,serif;min-height:100vh}
+body:before{content:"";position:fixed;inset:0;pointer-events:none;background:radial-gradient(ellipse at top,#39204788,transparent 60%)}
+main{width:min(760px,92%);margin:auto;padding:36px 0 60px}
+header{text-align:center;padding:35px 10px}
+.tag{color:#c4a4db;letter-spacing:4px;font:11px Arial,sans-serif}
+h1{font-size:clamp(34px,8vw,62px);margin:18px 0;color:#e8d7f5;text-shadow:0 0 25px #a35cc477}
+.subtitle{color:#a99bb5;font-style:italic}
+.panel{background:#15111dcc;border:1px solid #654875;border-radius:14px;padding:25px;margin:18px 0;box-shadow:0 12px 35px #0006}
+.scene{font-size:17px;line-height:1.9;white-space:pre-line}
+button{width:100%;margin-top:12px;padding:15px;background:#281c32;color:#f5eafa;border:1px solid #8d66a2;border-radius:8px;font:15px Georgia,serif;cursor:pointer;transition:.2s}
+button:hover{background:#51365f;transform:translateY(-2px)}
+button:focus-visible{outline:2px solid white;outline-offset:3px}
+h2{color:#d5b8e8;font-size:23px}
+#status{color:#c4a4db;font:12px Arial,sans-serif;letter-spacing:1px}
+footer{text-align:center;color:#807389;font:12px Arial,sans-serif;margin-top:30px}
+input{width:100%;padding:13px;background:#0c0911;color:white;border:1px solid #8d66a2;border-radius:7px;font-size:17px}
+</style>
+</head>
+<body>
+<main>
+<header>
+<div class="tag">A HAUNTED MYSTERY ADVENTURE</div>
+<h1>THE FORGOTTEN<br>MANSION</h1>
+<p class="subtitle">Some doors should never be opened.</p>
+</header>
+<div class="panel">
+<div id="status">NIGHT 01 · 11:57 PM</div>
+<h2 id="title">The Invitation</h2>
+<div class="scene" id="story">Three nights ago, a black envelope arrived at your door.
+
+Inside was an old brass key and a handwritten note:
+
+"Come to Blackthorn Mansion before midnight. The truth about what happened here belongs to you."
+
+Now you stand before its enormous iron gates. Lightning flashes behind the crooked towers.
+
+The gates slowly open by themselves.
+
+From somewhere inside, a clock begins to strike...</div>
+<div id="choices">
+<button onclick="play('gate')">🚪 Enter the mansion</button>
+<button onclick="play('letter')">📜 Examine the mysterious letter</button>
+<button onclick="play('window')">🪟 Look at the glowing upstairs window</button>
+</div>
+</div>
+<div class="panel">
+<h2>🎒 Your Clue Journal</h2>
+<p id="clues">No clues collected yet. Pay attention to everything.</p>
+</div>
+<footer>THE FORGOTTEN MANSION · Every secret has a price.</footer>
+</main>
+<script>
+const $=id=>document.getElementById(id);
+let clues=[];
+let room="start";
+function show(title,story,buttons){
+$("title").textContent=title;
+$("story").textContent=story;
+$("choices").innerHTML="";
+buttons.forEach(b=>{
+const btn=document.createElement("button");
+btn.textContent=b.label;
+btn.onclick=b.action;
+$("choices").appendChild(btn);
+});
+}
+function addClue(clue){
+if(!clues.includes(clue))clues.push(clue);
+$("clues").textContent=clues.join("  ✦  ");
+}
+function play(choice){
+if(choice==="gate"){
+room="hall";
+show("The Grand Hall",
+"The iron gates slam shut behind you.\n\nDust dances in the moonlight. Seven portraits line the staircase, but one frame is empty. A grandfather clock stands frozen at 11:57.\n\nOn a table, you see a candle and a small locked wooden box.",
+[
+{label:"🕯️ Take the candle",action:()=>{addClue("A candle from the grand hall");play("candle")}},
+{label:"🖼️ Inspect the empty portrait frame",action:()=>play("portrait")},
+{label:"📦 Examine the locked box",action:()=>play("box")}
+]);
+}else if(choice==="letter"){
+addClue("The letter mentions a truth hidden in Blackthorn Mansion");
+show("The Mysterious Letter",
+"On the back, almost invisible beneath the ink, are four words:\n\n'WHEN TIME STOPS, LOOK BELOW.'\n\nA cold breeze brushes your neck. You are certain someone is standing behind you... but when you turn, nobody is there.",
+[{label:"🚪 Enter the mansion",action:()=>play("gate")}]);
+}else if(choice==="window"){
+show("The Watching Window",
+"A pale light flickers in the third-floor window. For one instant, a silhouette appears behind the curtain.\n\nIt raises one hand and points downward.\n\nThen the light goes out.",
+[{label:"🚪 Enter the mansion",action:()=>play("gate")}]);
+}else if(choice==="candle"){
+show("A Flicker in the Dark",
+"The candle ignites with a blue flame. In its strange light, words appear on the wall:\n\n'THE FIRST HOUR HIDES THE ANSWER.'\n\nYou hear footsteps above you.",
+[{label:"🖼️ Inspect the portrait frame",action:()=>play("portrait")},{label:"📦 Open the wooden box",action:()=>play("box")}]);
+}else if(choice==="portrait"){
+addClue("One portrait is missing from the staircase");
+show("The Empty Frame",
+"Scratched into the wood are the words: ELIAS BLACKTHORN — 1897.\n\nA folded paper is trapped behind the frame. It reads:\n\n'Count the bells, not the faces.'",
+[{label:"📜 Keep investigating",action:()=>play("clock")},{label:"📦 Examine the box",action:()=>play("box")}]);
+}else if(choice==="box"){
+show("The Locked Box",
+"Four rotating number wheels guard the box. A message is carved into its lid:\n\n'I had twelve children, but only four remain. What am I?'\n\nEnter a four-digit code to unlock it.",
+[{label:"🔐 Try code 1897",action:()=>play("code1897")},{label:"🕰️ Search for another clue",action:()=>play("clock")}]);
+}else if(choice==="clock"){
+addClue("The frozen clock may hide a secret");
+show("The Frozen Clock",
+"The clock hands are stuck at 11:57. Beneath its face, you discover four tiny symbols: a moon, a key, an eye, and a bell.\n\nSomewhere inside the walls, a mechanism clicks.",
+[{label:"📦 Return to the locked box",action:()=>play("box")},{label:"👁️ Investigate the staircase",action:()=>play("portrait")}]);
+}else if(choice==="code1897"){
+show("Not Quite...",
+"The box rattles, but stays locked. The number 1897 is important, but perhaps it belongs to the mansion's history, not the lock.\n\nListen carefully. The house is trying to tell you something.",
+[{label:"🕰️ Search the clock",action:()=>play("clock")},{label:"🖼️ Re-examine the frame",action:()=>play("portrait")}]);
+}
+}
+</script>
+</body>
+</html>
